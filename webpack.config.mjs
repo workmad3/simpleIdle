@@ -1,10 +1,12 @@
 import path from 'path'
 import process from 'process'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
 const __dirname = path.resolve()
 
 const env = process.env.NODE_ENV || 'development'
+const production = (env === 'production')
 
 const config = {
   entry: path.resolve(__dirname, 'src/index.js'),
@@ -30,7 +32,7 @@ const config = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env']
           }
@@ -38,9 +40,10 @@ const config = {
       },
       {
         test: /\.css$/,
+        exclude: /\.module\.css$/,
         use: [
           {
-            loader: 'style-loader',
+            loader: production ? MiniCssExtractPlugin.loader : 'style-loader',
           },
           {
             loader: 'css-loader',
@@ -61,17 +64,40 @@ const config = {
         ]
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset'
+        test: /\.module\.css$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: production ? MiniCssExtractPlugin.loader : 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              modules: true
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  'postcss-preset-env'
+                ]
+              }
+            }
+          }
+        ]
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(woff(2)?|ttf|eot|svg|png|svg|jpg|jpeg|gif)(\?v=\d+\.\d+\.\d+)?$/,
         type: 'asset'
       }
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
+    new MiniCssExtractPlugin()
   ]
 }
 

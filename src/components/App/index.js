@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Container, Header } from 'semantic-ui-react'
-import { startTicks } from '../../reducers/game'
+import { Button, Container, Header } from 'semantic-ui-react'
+import { startTicks, stopTicks } from '../../reducers/game'
 import Clicker from '../Clicker'
 
 const App = () => {
-  const [ticks, clicks] = useSelector((state) => [state.game.ticks, state.game.clicks])
+  const ticks = useSelector((state) => state.game.ticks)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -15,9 +15,19 @@ const App = () => {
   return (
     <Container>
       <Header>Simple Idle</Header>
-      <div>Click count: {clicks}</div>
-      <div>Tick count: {ticks}</div>
-      <Clicker />
+      <Button onClick={() => dispatch(stopTicks()) }>
+        Stop
+      </Button>
+      <Button onClick={() => dispatch(startTicks(5)) }>
+        Start
+      </Button>
+      <div>Tick count: {ticks.toStringWithDecimalPlaces(2)}</div>
+      <Clicker target='clicks' />
+      <Clicker target='autoClickerOne' />
+      <Clicker target='autoClickerTwo' />
+      <Clicker target='autoClickerThree' />
+      <Clicker target='autoClickerFour' />
+      <Clicker target='autoClickerFive' />
     </Container>
   )
 }
